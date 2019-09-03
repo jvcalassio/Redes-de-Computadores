@@ -74,7 +74,7 @@ class app(tkinter.Tk):
             titulo_video = dec_json["items"][0]["snippet"]["title"]
             qtd_views = int(dec_json["items"][0]["statistics"]["viewCount"])
             qtd_with_comma = f"{qtd_views:,d}"
-            return titulo_video + "\": " + qtd_with_comma.replace(",",".")
+            return "\"" + titulo_video + "\": " + qtd_with_comma.replace(",",".")
 
 
 meuapp = app(None)

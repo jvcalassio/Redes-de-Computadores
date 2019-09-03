@@ -43,7 +43,7 @@ def print_data(str_json):
         qtd_with_comma = f"{qtd_views:,d}"
         print("Visualizacoes do video \"" + titulo_video + "\": " + qtd_with_comma.replace(",","."))
 
-
+print("Insira a URL do video no YouTube: ")
 link_video = str(input()).split("=")
 id_video = link_video[1].split("&")[0]
 

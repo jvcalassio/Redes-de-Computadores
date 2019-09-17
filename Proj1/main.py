@@ -11,7 +11,7 @@ class app(tkinter.Tk):
         tkinter.Tk.__init__(self, parent)
         self.parent = parent
         self.initialize()
-
+    # Monta a interface grafica
     def initialize(self):
         self.resizable(0, 0)
         self.grid()
@@ -35,12 +35,14 @@ class app(tkinter.Tk):
 
         self.label_Views = tkinter.Label(self, text="")  # response
         self.label_Views.grid(column=0, row=2, pady=3)
-
+        
+    # Chamada da funcao de busca em outra thread (e o programa nao ficar travado)
     def SearchCall(self):
         t = threading.Thread(target=self.Search)
         t.start()
         self.label_Views["text"] = "Loading..."
 
+    # Realiza a validacao da URL inserida. Se correta, realiza a busca
     def Search(self):
         try:
             yt_valid = [
@@ -65,6 +67,7 @@ class app(tkinter.Tk):
         except IndexError:
             self.label_Views["text"] = "Invalid URL. Please provide a full YouTube URL:\nhttps://www.youtube.com/watch?v=xxxxxxxx"
 
+    # Realiza a conexao com o servidor
     def get_data(self, id_video):
         try:
             hostname = "www.googleapis.com"
@@ -77,16 +80,16 @@ class app(tkinter.Tk):
             request += b"Host: www.googleapis.com\r\n"
             request += b"Accept: application/json\r\n\r\n"
 
-            timeout = 5
+            timeout = 5 # tempo limite escolhido para sobrar tempo de recebimento dos pacotes
 
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
             sock.settimeout(timeout)
 
-            ssock = ssl.wrap_socket(sock, server_side=False, ssl_version=ssl.PROTOCOL_TLS)
+            ssock = ssl.wrap_socket(sock, server_side=False, ssl_version=ssl.PROTOCOL_TLS) # protecao do socket
             ssock.connect(addr)
             ssock.sendall(request)
 
-            str_headers = ssock.recv()  # headers
+            str_headers = ssock.recv()  # headers ignorados
             str_json = ""
             while True:
                 try:
@@ -100,6 +103,7 @@ class app(tkinter.Tk):
         except socket.timeout:
             return None
 
+    # Tratamento do JSON recebido e exibicao da mensagem na tela
     def return_data(self, str_json):
         if(str_json != None):
             try:

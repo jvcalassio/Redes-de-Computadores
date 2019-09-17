@@ -71,7 +71,7 @@ class app(tkinter.Tk):
     def get_data(self, id_video):
         try:
             hostname = "www.googleapis.com"
-            addr = (hostname, 443)
+            addr = (hostname, 443) # porta 443 = TLS/SSL
             request = b"GET /youtube/v3/videos?part=statistics%2Csnippet&id="
             request += bytes(id_video.encode("utf-8"))
             request += b"&key=AIzaSyBaXGIGJzo3cVv-I5gUlz4Mbydoa_SzB_Q"
@@ -82,7 +82,7 @@ class app(tkinter.Tk):
 
             timeout = 5 # tempo limite escolhido para sobrar tempo de recebimento dos pacotes
 
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0) # conexao TCP
             sock.settimeout(timeout)
 
             ssock = ssl.wrap_socket(sock, server_side=False, ssl_version=ssl.PROTOCOL_TLS) # protecao do socket

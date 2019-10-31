@@ -8,9 +8,9 @@ vazao = 8000 # bps
 distancia = 10 # metros
 proberro = 10 # 0-100%
 timeout = 1
-pktsize = 20 # tamanho do pacote
+pktsize = 5 # tamanho do pacote
 mspeed = 2 * 10**8 # velocidade do meio (fibra otica)
-janela = 7
+janela = 7 # qtd pacotes da janela
 atraso = (pktsize/vazao) + (distancia/mspeed)
 
 ##################################################
@@ -51,7 +51,6 @@ class srepeat():
         conn.send_window(nextwindow, timeouts, ackedpackets) # envia a primeira janela
         while True:
             #time.sleep(timeout)
-            time.sleep(1)
             conn.recv_msg(ackedpackets)
 
             isAllAcked = True
@@ -155,4 +154,4 @@ class connection_snw():
     def close(self):
         self.sock.close()
 
-mapp = srepeat()
+mapp = stopnwait()

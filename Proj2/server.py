@@ -1,6 +1,7 @@
 import socket
 import random
 import time
+import sys
 
 host = ("localhost", 8091)
 
@@ -8,9 +9,10 @@ vazao = 8000 # bps
 distancia = 10 # metros
 proberro = 10 # 0-100%
 timeout = 1
-pktsize = 17 # tamanho do pacote
+pktsize = 5 # tamanho do pacote
 mspeed = 2 * 10**8 # velocidade do meio (fibra otica)
-janela = 7
+janela = 7 # qtd pacotes da janela
+atraso = (pktsize/vazao) + (distancia/mspeed)
 
 class srepeat():
     def __init__(self):
@@ -19,7 +21,6 @@ class srepeat():
 class server_sr():
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        atraso = ((pktsize)/vazao) + (distancia/mspeed)
         self.sock.settimeout(atraso)
         self.sock.bind(host)
         print("Esperando mensagens")
@@ -30,7 +31,6 @@ class server_sr():
         delivered = []
         while True:
             try:
-                time.sleep(1)
                 msg, cliente = self.sock.recvfrom(pktsize)
                 print("Mensagem recebida: ", msg.decode())
                 arr_msg = msg.decode().split(" ") # arr_msg[0] = codigo; 
@@ -53,12 +53,16 @@ class server_sr():
                         complete = False
 
                 if(complete): # janela completa, salva no delivered
-                    delivered.append(buffer)
-                    for i in range(0,janela-1):
+                    delivered.append(buffer.copy())
+                    for i in range(0,janela):
                         buffer[i] = None
 
             except socket.timeout:
                 continue
+
+            except KeyboardInterrupt:
+                print(delivered)
+                sys.exit()
 
 class stopnwait():
     def __init__(self):
@@ -67,27 +71,31 @@ class stopnwait():
 class server_snw():
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        atraso = ((pktsize)/vazao) + (distancia/mspeed)
         self.sock.settimeout(atraso)
         self.sock.bind(host)
         print("Esperando mensagens")
         self.listen()
 
     def listen(self):
+        delivered = []
         while True:
             try:
                 msg, cliente = self.sock.recvfrom(pktsize)
                 print("Mensagem recebida: " + msg.decode())
                 identifier = msg.decode().split(" ")[0]
                 failsend = random.randint(0,100)
+                delivered.append(msg.decode().split(" ")[1])
                 if(failsend > proberro): # se nao houver erro na transmissao do ack
                     self.sock.sendto((identifier + " ACK").encode(), cliente)
                 else:
                     print("erro na transmissao do ACK " + identifier)
-            except:
+            except socket.timeout:
                 continue
+            except KeyboardInterrupt:
+                print(delivered)
+                sys.exit()
 
     def close(self):
         self.sock.close()
 
-m = srepeat()
+m = stopnwait()

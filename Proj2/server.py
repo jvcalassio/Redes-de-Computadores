@@ -82,7 +82,7 @@ class server_snw():
 
     def listen(self):
         delivered = []
-        while isRunning:
+        while True:
             try:
                 msg, cliente = self.sock.recvfrom(pktsize)
                 print("Mensagem recebida: " + msg.decode())

@@ -74,6 +74,7 @@ class main(Tk):
 
         t = Thread(target=self.startSNWServer)
         t.start()
+        time.sleep(1)
         t2 = Thread(target=self.startSNWClient)
         t2.start()
 
@@ -99,7 +100,7 @@ class main(Tk):
         try:
             t = Thread(target=self.startSRServer)
             t.start()
-            time.sleep(2)
+            time.sleep(1)
             t2 = Thread(target=self.startSRClient)
             t2.start()
         except (KeyboardInterrupt, SystemExit):

@@ -51,7 +51,7 @@ class srepeat():
         conn.send_window(nextwindow, timeouts, ackedpackets) # envia a primeira janela
         while True:
             #time.sleep(timeout)
-            #time.sleep(atraso)
+            time.sleep(atraso)
             conn.recv_msg(ackedpackets)
 
             isAllAcked = True

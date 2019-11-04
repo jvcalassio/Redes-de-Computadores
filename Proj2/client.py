@@ -1,7 +1,7 @@
 import socket
-import threading
 import random
 import time
+from math import ceil
 
 host = ("localhost", 8091)
 vazao = 8000 # bps
@@ -51,6 +51,7 @@ class srepeat():
         conn.send_window(nextwindow, timeouts, ackedpackets) # envia a primeira janela
         while True:
             #time.sleep(timeout)
+            #time.sleep(atraso)
             conn.recv_msg(ackedpackets)
 
             isAllAcked = True
@@ -72,7 +73,7 @@ class srepeat():
 class connection_sr():
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        timeout = (atraso * 2)
+        timeout = ceil(atraso * 2)
         self.sock.settimeout(timeout)
 
     def send_window(self, nextwindow, timeouts, ackedpackets): # enviar os N pacotes da janela
@@ -130,7 +131,7 @@ class stopnwait():
 class connection_snw():
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        timeout = (2 * atraso)
+        timeout = ceil(2 * atraso)
         self.sock.settimeout(timeout)
 
     def send_msg(self, msg, ls):
@@ -154,4 +155,4 @@ class connection_snw():
     def close(self):
         self.sock.close()
 
-mapp = stopnwait()
+#mapp = srepeat()

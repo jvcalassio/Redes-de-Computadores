@@ -2,6 +2,7 @@ import socket
 import random
 import time
 import sys
+from math import ceil
 
 host = ("localhost", 8091)
 
@@ -13,6 +14,7 @@ pktsize = 5 # tamanho do pacote
 mspeed = 2 * 10**8 # velocidade do meio (fibra otica)
 janela = 7 # qtd pacotes da janela
 atraso = (pktsize/vazao) + (distancia/mspeed)
+delivered = []
 
 class srepeat():
     def __init__(self):
@@ -21,7 +23,7 @@ class srepeat():
 class server_sr():
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.settimeout(atraso)
+        self.sock.settimeout(ceil(atraso))
         self.sock.bind(host)
         print("Esperando mensagens")
         self.listen()
@@ -31,6 +33,7 @@ class server_sr():
         delivered = []
         while True:
             try:
+                #time.sleep(atraso)
                 msg, cliente = self.sock.recvfrom(pktsize)
                 print("Mensagem recebida: ", msg.decode())
                 arr_msg = msg.decode().split(" ") # arr_msg[0] = codigo; 
@@ -64,6 +67,7 @@ class server_sr():
                 print(delivered)
                 sys.exit()
 
+
 class stopnwait():
     def __init__(self):
         sv = server_snw()
@@ -71,14 +75,14 @@ class stopnwait():
 class server_snw():
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.settimeout(atraso)
+        self.sock.settimeout(ceil(atraso))
         self.sock.bind(host)
         print("Esperando mensagens")
         self.listen()
 
     def listen(self):
         delivered = []
-        while True:
+        while isRunning:
             try:
                 msg, cliente = self.sock.recvfrom(pktsize)
                 print("Mensagem recebida: " + msg.decode())
@@ -98,4 +102,4 @@ class server_snw():
     def close(self):
         self.sock.close()
 
-m = stopnwait()
+#m = srepeat()

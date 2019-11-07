@@ -25,7 +25,7 @@ class server_sr():
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.settimeout(ceil(atraso))
         self.sock.bind(host)
-        print("Esperando mensagens")
+        print("[RECEIVER]: Esperando mensagens")
         self.listen()
 
     def listen(self):
@@ -35,7 +35,7 @@ class server_sr():
             try:
                 #time.sleep(atraso)
                 msg, cliente = self.sock.recvfrom(pktsize)
-                print("Mensagem recebida: ", msg.decode())
+                print("[RECEIVER]: Mensagem recebida: ", msg.decode())
                 arr_msg = msg.decode().split(" ") # arr_msg[0] = codigo; 
                                                   # arr_msg[1] = msg;
                 
@@ -46,9 +46,9 @@ class server_sr():
 
                 if(failsend >= proberro): # se nao cumprir a prob de erro
                     self.sock.sendto((arr_msg[0] + " ACK").encode(), cliente) # envia X ACK
-                    print("ACK #" + arr_msg[0] + " enviado")
+                    print("[RECEIVER]: ACK #" + arr_msg[0] + " enviado")
                 else:
-                    print("Erro ao enviar o ACK #" + arr_msg[0])
+                    print("[RECEIVER]: Erro ao enviar o ACK #" + arr_msg[0])
 
                 complete = True
                 for i,data in enumerate(buffer):
@@ -77,7 +77,7 @@ class server_snw():
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.settimeout(ceil(atraso))
         self.sock.bind(host)
-        print("Esperando mensagens")
+        print("[RECEIVER]: Esperando mensagens")
         self.listen()
 
     def listen(self):
@@ -85,14 +85,14 @@ class server_snw():
         while True:
             try:
                 msg, cliente = self.sock.recvfrom(pktsize)
-                print("Mensagem recebida: " + msg.decode())
+                print("[RECEIVER]: Mensagem recebida: " + msg.decode())
                 identifier = msg.decode().split(" ")[0]
                 failsend = random.randint(0,100)
                 delivered.append(msg.decode().split(" ")[1])
                 if(failsend > proberro): # se nao houver erro na transmissao do ack
                     self.sock.sendto((identifier + " ACK").encode(), cliente)
                 else:
-                    print("erro na transmissao do ACK " + identifier)
+                    print("[RECEIVER]: erro na transmissao do ACK " + identifier)
             except socket.timeout:
                 continue
             except KeyboardInterrupt:

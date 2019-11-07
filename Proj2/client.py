@@ -51,14 +51,14 @@ class srepeat():
         conn.send_window(nextwindow, timeouts, ackedpackets) # envia a primeira janela
         while True:
             #time.sleep(timeout)
-            time.sleep(atraso)
+            #time.sleep(atraso)
             conn.recv_msg(ackedpackets)
 
             isAllAcked = True
             for i,isAcked in enumerate(ackedpackets):
                 if(not isAcked):
                     isAllAcked = False
-                    if(timeouts[i] + 2 < time.time()): # se ja passou o timeout do pacote, reenvia
+                    if(timeouts[i] + 1 < time.time()): # se ja passou o timeout do pacote, reenvia
                         conn.send_individual_packet(i, nextwindow[i], timeouts, ackedpackets)
 
             if(isAllAcked): # se todos ja foram enviados, muda janela
@@ -84,7 +84,7 @@ class connection_sr():
                 self.sock.sendto(tosend.encode(), host)
                 timeouts[index] = time.time() + timeout
                 ackedpackets[index] = False
-                print("Pacote #" + str(index) + " (" + str(packet) + ") enviado")
+                print("[SENDER]: Pacote #" + str(index) + " (" + str(packet) + ") enviado")
 
     def send_individual_packet(self, i, packet, timeouts, ackedpackets):
         failsend = random.randint(0,100)
@@ -93,12 +93,12 @@ class connection_sr():
             self.sock.sendto(tosend.encode(), host)
             timeouts[i] = time.time() + timeout
             ackedpackets[i] = False
-            print("Pacote #" + str(i) + " (" + str(packet) + ") reenviado")
+            print("[SENDER]: Pacote #" + str(i) + " (" + str(packet) + ") reenviado")
 
     def recv_msg(self, ackedpackets): # retorna mensagem
         try:
             msg, server = self.sock.recvfrom(pktsize)
-            print("Recebido " + msg.decode())
+            print("[SENDER]: Recebido " + msg.decode())
             arr_msg = msg.decode().split(" ") # recebe X ACK
             
             identifier = int(arr_msg[0])
@@ -137,17 +137,17 @@ class connection_snw():
     def send_msg(self, msg, ls):
         msg = ("1" if ls else "0") + " " + msg
         failsend = random.randint(0,100)
-        print("#" + msg + " enviado")
+        print("[SENDER]: #" + msg + " enviado")
         if(failsend > proberro): # se nao houver erro na transmissao da mensagem
             self.sock.sendto(msg.encode(), host)
         else:
-            print("ocorreu um erro na transmissao")
+            print("[SENDER]: ocorreu um erro na transmissao")
 
     def recv_msg(self):
         try:
             msg, server = self.sock.recvfrom(pktsize)
             recvmsg = msg.decode().split(" ")
-            print("#" + recvmsg[0] + " " + recvmsg[1] + " recebido")
+            print("[SENDER]: #" + recvmsg[0] + " " + recvmsg[1] + " recebido")
             return (recvmsg[0], recvmsg[1])
         except socket.timeout:
             return (None, None)
